@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement & Internship Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="auth-container" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-logo">🚀 PlacementAI</div>
+            <h2 id="auth-title">Welcome Back</h2>
+            <p id="auth-subtitle" class="page-subtitle">Please select your role and enter your credentials to log in.</p>
+
+            <form id="auth-form">
+                <div class="form-group">
+                    <label for="auth-role">Login As</label>
+                    <select id="auth-role" onchange="toggleRegFields()">
+                        <option value="STUDENT">Student</option>
+                        <option value="RECRUITER">Recruiter / Company</option>
+                        <option value="ADMIN">College Administrator</option>
+                    </select>
+                </div>
+
+                <div id="reg-fields" class="hidden">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name / Company Name</label>
+                        <input type="text" id="reg-name" placeholder="e.g., John Doe or TechCorp Inc.">
+                    </div>
+                    <div id="student-only-fields">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="reg-branch">Department / Branch</label>
+                                <input type="text" id="reg-branch" placeholder="e.g., CSE">
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-cgpa">Current CGPA</label>
+                                <input type="number" id="reg-cgpa" step="0.01" placeholder="e.g., 8.50">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-skills">Skills (Comma Separated)</label>
+                            <input type="text" id="reg-skills" placeholder="e.g., Java, Python, SQL">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="auth-email">Email Address</label>
+                    <input type="email" id="auth-email" placeholder="name@college.edu" required>
+                </div>
+                <div class="form-group">
+                    <label for="auth-password">Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" id="auth-submit-btn" class="btn-primary auth-btn">Sign In</button>
+            </form>
+
+            <div class="auth-footer">
+                <span id="auth-toggle-msg">New to the platform?</span>
+                <button type="button" id="auth-toggle-link" onclick="toggleAuthMode()">Create an account</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-workspace" class="main-workspace hidden">
+        
+        <nav class="sidebar">
+            <div class="logo">🚀 PlacementAI</div>
+            
+            <div id="user-profile-badge" class="user-badge">
+                <div class="avatar">👤</div>
+                <div>
+                    <p id="badge-name" class="badge-title">Loading...</p>
+                    <p id="badge-role" class="badge-subtitle-text">User Role</p>
+                </div>
+            </div>
+
+            <div class="nav-links">
+                <div id="student-links">
+                    <div class="nav-section-title">Student Dashboard</div>
+                    <button class="nav-btn active" onclick="switchTab('student-dashboard')">📊 Overview Dashboard</button>
+                    <button class="nav-btn" onclick="switchTab('resume-analyzer')">🤖 AI Resume Analyzer</button>
+                    <button class="nav-btn" onclick="switchTab('search-internships')">🔍 Explore Internships</button>
+                    <button class="nav-btn" onclick="switchTab('application-tracker')">📋 Track Applications</button>
+                </div>
+
+                <div id="recruiter-links">
+                    <div class="nav-section-title">Recruiter Panel</div>
+                    <button class="nav-btn" onclick="switchTab('company-dashboard')">📊 Operations Hub</button>
+                    <button class="nav-btn" onclick="switchTab('post-internship')">➕ Post Internship</button>
+                    <button class="nav-btn" onclick="switchTab('manage-applicants')">👥 Manage Applicants</button>
+                </div>
+
+                <div id="admin-links">
+                    <div class="nav-section-title">Admin Controls</div>
+                    <button class="nav-btn" onclick="switchTab('admin-dashboard')">📈 Analytics & Reports</button>
+                </div>
+            </div>
+
+            <button class="btn-logout" onclick="processLogout()">Sign Out</button>
+        </nav>
+
+        <main class="content-viewport">
+            
+            <section id="student-dashboard-view" class="tab-view">
+                <h1 class="page-title">Dashboard Overview</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div><p class="stat-label">Applications Sent</p><p class="stat-count" id="dash-applied-count">3</p></div>
+                        <div class="indicator blue"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Shortlisted</p><p class="stat-count">1</p></div>
+                        <div class="indicator yellow"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Interviews Scheduled</p><p class="stat-count">1</p></div>
+                        <div class="indicator purple"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Offers Received</p><p class="stat-count">0</p></div>
+                        <div class="indicator green"></div>
+                    </div>
+                </div>
+
+                <div class="ai-box">
+                    <div class="ai-header"><span>🤖</span><h2>AI Internship Recommendations For You</h2></div>
+                    <div id="ai-recommendations-container" class="recommendation-grid"></div>
+                </div>
+            </section>
+
+            <section id="resume-analyzer-view" class="tab-view">
+                <h1 class="page-title">AI Resume Analyzer</h1>
+                <p class="page-subtitle">Upload your resume in PDF format to instantly check if your profile fits current job market demands.</p>
+                <div class="upload-card">
+                    <form id="resume-form" class="dropzone">
+                        <span class="upload-icon">📄</span>
+                        <p class="dropzone-text">Drag and drop your PDF resume here, or click to browse files</p>
+                        <input type="file" id="file-input" accept=".pdf" required>
+                        <button type="submit" class="btn-primary" id="analyze-btn">Analyze Resume</button>
+                    </form>
+                </div>
+
+                <div id="analysis-report" class="report-card hidden">
+                    <div class="report-header">
+                        <h2>Analysis Breakdown</h2>
+                        <div class="score-container"><span class="score-label">Match Score:</span><span class="score-badge" id="resume-score">0%</span></div>
+                    </div>
+                    <div class="skills-split">
+                        <div class="skills-box skills-found"><h3>✅ Skills Found in Your Resume</h3><div id="found-skills-tags" class="tags-container"></div></div>
+                        <div class="skills-box skills-missing"><h3>❌ Missing Skills Evaluators Look For</h3><div id="missing-skills-tags" class="tags-container"></div></div>
+                    </div>
+                    <div class="suggestions-box"><h3>💡 Recommendations to Improve Your Score</h3><p id="suggestion-text"></p></div>
+                </div>
+            </section>
+
+            <section id="search-internships-view" class="tab-view">
+                <h1 class="page-title">Explore Open Internships</h1>
+                <div class="filter-bar">
+                    <input type="text" id="search-input" placeholder="Search by job title, technologies, or company..." onkeyup="filterInternships()">
+                    <select id="location-select">
+                        <option value="all">All Locations</option>
+                        <option value="remote">Remote</option>
+                        <option value="onsite">On-Site / In-Office</option>
+                    </select>
+                </div>
+                <div id="internships-grid" class="jobs-grid"></div>
+            </section>
+
+            <section id="application-tracker-view" class="tab-view">
+                <h1 class="page-title">Your Applications</h1>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Company</th><th>Role</th><th>Date Applied</th><th>Status</th></tr>
+                        </thead>
+                        <tbody id="tracking-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="company-dashboard-view" class="tab-view">
+                <h1 class="page-title">Recruiter Dashboard</h1>
+                <p class="page-subtitle">Track your active job postings and easily manage incoming student application statuses.</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div><p class="stat-label">Active Job Postings</p><p class="stat-count" id="active-jobs-count">3</p></div>
+                        <div class="indicator blue"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Total Applications Received</p><p class="stat-count" id="recruiter-total-apps">3</p></div>
+                        <div class="indicator purple"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Shortlisted Profiles</p><p class="stat-count" id="recruiter-shortlist-count">1</p></div>
+                        <div class="indicator green"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="post-internship-view" class="tab-view">
+                <h1 class="page-title">Post a New Internship Opportunity</h1>
+                <div class="form-container">
+                    <form id="post-job-form" class="custom-form">
+                        <div class="form-group">
+                            <label>Job Title / Role</label>
+                            <input type="text" id="job-title" placeholder="e.g., Spring Boot Backend Intern" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Stipend (per month)</label>
+                                <input type="text" id="job-stipend" placeholder="e.g., $500/mo" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Job Location</label>
+                                <select id="job-location">
+                                    <option value="remote">Remote</option>
+                                    <option value="onsite">On-Site / In-Office</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Required Skills (Comma Separated)</label>
+                            <input type="text" id="job-skills" placeholder="e.g., Java, Spring Boot, MySQL" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Post Opportunity</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="manage-applicants-view" class="tab-view">
+                <h1 class="page-title">Incoming Student Applications</h1>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr><th>Student Name</th><th>Applied Role</th><th>AI Profile Match</th><th>Resume</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="applicants-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="admin-dashboard-view" class="tab-view">
+                <h1 class="page-title">College Placement Reports</h1>
+                <p class="page-subtitle">Monitor live institutional metrics and campus hiring drive success statuses.</p>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div><p class="stat-label">Total Registered Students</p><p class="stat-count">500</p></div>
+                        <div class="indicator blue"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Corporate Partners</p><p class="stat-count">60</p></div>
+                        <div class="indicator yellow"></div>
+                    </div>
+                    <div class="stat-card">
+                        <div><p class="stat-label">Students Placed</p><p class="stat-count">200</p></div>
+                        <div class="indicator green"></div>
+                    </div>
+                </div>
+
+                <div class="analytics-box">
+                    <h2>Placement Metrics by Department</h2>
+                    <div class="chart-mock">
+                        <div class="chart-row">
+                            <span class="chart-label">Computer Science Eng. (CSE)</span>
+                            <div class="progress-bar-container"><div class="progress-fill" style="width: 82%;">82% Placed</div></div>
+                        </div>
+                        <div class="chart-row">
+                            <span class="chart-label">Information Technology (IT)</span>
+                            <div class="progress-bar-container"><div class="progress-fill" style="width: 74%;">74% Placed</div></div>
+                        </div>
+                        <div class="chart-row">
+                            <span class="chart-label">Electronics & Comm. (ECE)</span>
+                            <div class="progress-bar-container"><div class="progress-fill" style="width: 55%;">55% Placed</div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
